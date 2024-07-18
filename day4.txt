@@ -1,0 +1,140 @@
+IPv6
+1.a:c::
+2.::
+3. fe80::a:0:f
+4.2002:6500:0:3000::
+5.::1/128
+
+Task 1:IPv6
+
+8 4 2 1      8 4 2 1      8 4 2 1      8 4 2 1 
+
+
+Task 2: Name the 3 ways to give IPv6 add:
+100%, 50%, 0%
+
+config t
+ipv6 Unicast-routing
+int Gi2
+ ipv6 enable
+ ipv6 address autoconfig
+ ipv6 address face:cafe:aced:dace::/64 eui-64
+ ipv6 address b00b:b0b0:caca:dada::/64 eui-64
+ ipv6 address baba:b2b2:caad:daad::/64 eui-64
+ do sh ipv6 int brief
+
+
+
+Task 3; sykes (2500 subnets)
+aaaa:bbbb:cccc::/48
+CAI:
+convert:2500 = 9 bits
+add: /48 + /9 = 57
+isaisahin: 0000,0080,0100,0180,0200,0280
+
+
+config t
+int Loopback1
+ ipv6 address aaaa:bbbb:cccc:0000::aaaa/57
+int Loopback2
+ ipv6 address aaaa:bbbb:cccc:0080::aaaa/57
+int Loopback3
+ ipv6 address aaaa:bbbb:cccc:0100::aaaa/57
+int Loopback4
+ ipv6 address aaaa:bbbb:cccc:0180::aaaa/57
+int Loopback5
+ ipv6 address aaaa:bbbb:cccc:0200::aaaa/57
+int Loopback6
+ ipv6 address aaaa:bbbb:cccc:0280::aaaa/57
+ do sh ipv6 int brief
+
+
+
+4: Telus (1500)
+Convert: 1500 = 11bits
+Add: /48 + /11 = /59
+Isa isahin: 0000,0020,0100,0
+CCCC:DDDD:EEEE:0000
+CCCC:DDDD:EEEE:0020
+
+
+Task5: Running linux and cisco server together:
+
+CSR-
+
+Gi1: 192.168.108.31 --
+Gi2: 192.168.102.31 -- bldgLin2  192.168.102.52
+Gi3: 192.168.103.31 -- bldgLin3: 192.168.103.33
+		       bldgLin3A:192.168.103.34
+sudo ifconfig eth0 192.168._._ netmask 255.255.255.0 up
+sudo route add dafault gw 192.168.10_.31
+
+
+Task6: NAT or Network Address Transaltion to five internet to your building/home.
+	What is NAT: Proxy, tether, hotspot, pashare
+	
+
+
+CISCOaws(config)#line console 0
+CISCOaws(config-line)#exec-timeout
+CISCOaws(config-line)#exec-timeout 0 0
+
+Give Internet to all bldg.
+Step1: Get internet to CiscoAWS:
+config t
+int gi 1
+ no shut
+ ip add 192.168.108.31 255.255.255.0
+int gi 2
+ no shut
+ ip add 192.168.102.31 255.255.255.0
+int gi 3
+ no shut
+ ip add 192.168.103.31 255.255.255.0
+
+Step2: Give static route to CiscoAWS: (Get INTERNET!)
+config t
+ip route 0.0.0.0 0.0.0.0 192.168.108.2
+ip domain-lookup
+ip name-server 8.8.8.8 1.1.1.1
+end
+
+
+Step3: Give Internet to the Bldg using NAT and access-list
+create access-list to permit all building
+create NAT inside,outside
+create NAT overloads and overload:
+config t
+no access-list 3
+access-list 3 permit 192.168.102.0 0.0.0.255
+access-list 3 permit 192.168.103.0 0.0.0.255
+Int Gi1
+ ip nat outside
+Int gi2
+ ip nat inside
+Int gi3
+ ip nat inside
+ip nat inside source list 3 interface gi 1 oerload
+!for VIPs, 1st priority may Internet 108.69 as Reserved Internet
+ip nat inside source static 192.168.103.33 192.168.108.69
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

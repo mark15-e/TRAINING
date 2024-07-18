@@ -1,0 +1,229 @@
+STATIC ROUTING
+
+
+
+How to get fired: FACTORY RESERT routing
+Config t
+no IP routing
+ip routing
+end
+
+STATIC
+
+edge
+ip route 10.11.0.0 255.255.0.0 200.0.0.11
+ip route 10.12.0.0 255.255.0.0 200.0.0.12
+ip route 10.21.0.0 255.255.0.0 200.0.0.21
+ip route 10.22.0.0 255.255.0.0 200.0.0.22
+ip route 10.32.0.0 255.255.0.0 200.0.0.32
+no ip route 10.41.0.0 255.255.0.0 200.0.0.41
+no ip route 10.42.0.0 255.255.0.0 200.0.0.42
+no ip route 10.31.0.0 255.255.0.0 10.31.31.4
+
+
+core baba
+ip route 0.0.0.0 0.0.0.0 10.31.31.1 1
+ 
+
+CUCM
+ip route 0.0.0.0 0.0.0.0 10.31.100.4 
+
+
+bonus static routing sa windows
+
+CMD
+route add 10.0.0.0 MASK 255.0.0.0 10.31.1.4
+route add 200.0.0.0 MAS 255.255.255.0 10.31.1.4
+
+
+Default 
+
+OSPF EDGE
+config t 
+no router ospf 1
+router ospf 1
+router-id 31.0.0.1
+network 10.31.31.0  0.0.0.255 area 0
+network 31.0.0.1  0.0.0.0 area 0
+network  200.0.0.0 0.0.0.255 area 0
+
+
+
+OSPF corebaba
+config t 
+no router ospf 1
+router ospf 1
+network 10.31.1.0  0.0.0.255 area 0
+network 10.31.10.0  0.0.0.255 area 0
+network  10.31.31.0 0.0.0.255 area 0
+network 10.31.50.0  0.0.0.255 area 0
+network 10.31.100.0 0.0.0.255 area 31
+
+
+OSPF CUCM
+config t 
+no router ospf 1
+router ospf 1
+network 10.31.100.0 0.0.0.255 area 31
+
+how to monitor
+clear ip ospf process
+OSPF Election: "DITE ELF"
+Down: No adjacency, hello sent
+Init: Build adjacency
+TwoWay: Hello was recieved
+Exstart: Database Description:DbD
+Exchange: LinkState Updates (LSA = Link State Advetisement (LAMAN NI LSU) LSA ) TYPE1=O TYPE2=DR TYPE3=IOA
+Loading: routing is being loaded
+Full
+
+kill OSPF
+edge,core.cm
+config t
+no router OSPF 1
+end
+
+CCNA EXAM:STATIC,DEFAULT,OSPF Ipv6
+CCNP: EIGRP,VPN,BGP
+
+
+
+
+
+CSR cisco cloud services router
+config t
+no logging console
+no ip domain-lookup
+int gi 3
+ no hust
+ ip add 192.168.103.31 255.255.255.0
+ do wr
+end
+
+
+
+TASK 7. Configure IPv6 in cisco cloudservicerouter
+Method 1: autoconfig:100% automatic
+config t
+line vty 0 14
+ exec-timeout 0 0 
+ipv6 Unicast-routing
+int Gi2
+ ipv6 enable
+ ipv6 address autoconfig
+ do sh ipv6 int brief
+
+Method 2: Extended UserID/EUI-64 Methid: 50% ikaw, 50% Automatic
+config t
+ipv6 Unicast-routing
+int gi 2
+ no shut
+ ipv6 address face:cafe:aced:dace::/64 eui-64
+ ipv6 address b00b:b0b0:caca:dada::/64 eui-64
+ ipv6 address baba:b2b2:caad:daad::/64 eui-64
+do sh ipv6 int brief
+
+
+
+
+how to subnet IPv6: /49 -- /64
+
+8 4 2 1		8 4 2 1 	8 4 2 1 	8 4 2 1 
+
+Ex1. ACN using: face:cafe:aced::/48 but will have subnet: pilot 50 offices
+CAI: Convert, Add, IchambaMo:
+Convert: 50 is bits= 6 bits
+AddToOrig/: /48 + /6 = /54
+IchambaMo:  00 04 08 0c
+
+Ex1. SYKES using: face:cafe:aced::/48 but will have subnet: pilot 240 offices
+CAI: Convert, Add, IchambaMo:
+Convert: 240 is bits= 8 bits
+AddToOrig/: /48 + /8 = /56
+IchambaMo: 00,01,02,03,04
+
+face:cafe:aced:00
+face:cafe:aced:01
+face:cafe:aced:02
+face:cafe:aced:03
+face:cafe:aced:04
+
+
+
+config t
+int loopback 0
+ no ipv6 face:cafe:aced::1/58
+int loopback 1
+  ipv6 face:cafe:aced:004::1/58
+int loopback 2
+  ipv6 face:cafe:aced:008::1/58
+int loopback 3
+  ipv6 face:cafe:aced:00c::1/58
+int loopback 4
+  ipv6 face:cafe:aced:010::1/58
+int loopback 5
+  ipv6 face:cafe:aced:014::1/58
+  do sh ipv6 int brief
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

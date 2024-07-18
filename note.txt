@@ -1,0 +1,20 @@
+show run 
+sh ip int br 
+show mac-address-table
+show vlan br
+show arp
+show power inline
+show ip route static / ospf/ bgp/ eigrp/ 
+sh ip route OSPF | inc IA
+show run | section  include
+show run | section  exclude
+sir- show ip route
+sirc- show ip route connected
+sip- show ip protocol
+siro - show ip route OSPF
+sion - show ip OSPF neighbor
+siib - show ip int brief
+sir - show
+sh run | section ospf
+clear ip ospf process
+route print
