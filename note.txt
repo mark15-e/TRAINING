@@ -18,3 +18,13 @@ sir - show
 sh run | section ospf
 clear ip ospf process
 route print
+copy run ftp:
+sh ip nat 
+sh flash: | inc .bin (copy flash:c1861-advipservicesk9-mz.152-1.GC.bin tftp:)
+nmap -sP IP/24
+nmap -v IP
+
+-VMWARE
+netstat -rn
+
+c:\Windows\System32\drivers\etc

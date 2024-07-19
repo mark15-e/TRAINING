@@ -67,7 +67,7 @@ Gi2: 192.168.102.31 -- bldgLin2  192.168.102.52
 Gi3: 192.168.103.31 -- bldgLin3: 192.168.103.33
 		       bldgLin3A:192.168.103.34
 sudo ifconfig eth0 192.168._._ netmask 255.255.255.0 up
-sudo route add dafault gw 192.168.10_.31
+sudo route add default gw 192.168.10_.31
 
 
 Task6: NAT or Network Address Transaltion to five internet to your building/home.
@@ -82,15 +82,21 @@ CISCOaws(config-line)#exec-timeout 0 0
 Give Internet to all bldg.
 Step1: Get internet to CiscoAWS:
 config t
+ipv6 unicast-routing
+no logging console 
+line console 0
+ exec-timeout 0 0 
 int gi 1
  no shut
- ip add 192.168.108.31 255.255.255.0
+ ip add 192.168.108.8 255.255.255.0
 int gi 2
  no shut
- ip add 192.168.102.31 255.255.255.0
+ ip add 192.168.102.8 255.255.255.0
+ ipv6 add a:a:a:b::a/64
 int gi 3
  no shut
- ip add 192.168.103.31 255.255.255.0
+ ip add 192.168.103.8 255.255.255.0
+ ipv6 add a:a:a:a::a/64
 
 Step2: Give static route to CiscoAWS: (Get INTERNET!)
 config t
@@ -119,22 +125,291 @@ ip nat inside source list 3 interface gi 1 oerload
 ip nat inside source static 192.168.103.33 192.168.108.69
 
 
+Task7: NETWORK TIME PROTOCOL: OR NTP
+Cisco a network service that Synchronizes all the Time Zones.
+USING port 123 udp.
+Step1: Get internet to CiscoAWS:
+config t
+ipv6 unicast-routing
+no logging console 
+line console 0
+ exec-timeout 0 0 
+int gi 1
+ no shut
+ ip add 192.168.108.8 255.255.255.0
+int gi 2
+ no shut
+ ip add 192.168.102.8 255.255.255.0
+int gi 3
+ no shut
+ ip add 192.168.103.8 255.255.255.0
+ ipv6 add a:a:a:a::a/64
+
+step2.
+config t
+ip route 0.0.0.0 0.0.0.0 192.168.108.2
+ip domain lookup
+ip name-server 8.8.8.8 1.1.1.1
+end
+ping time.google.com = 216.239.35.4
+
+config t
+ntp server 216.239.35.4
+end
+
+show ntp association
+*`216.239.35.4    .G00G.
+sh clock
 
 
 
+Task 8: FTP (File Transfer Protocol Server) "layer 7 protocol SRC port:21 ,seq=1, ack=1
+is a layer 7 protocol that uses layer 4 port 21/20 TCP protocol.
+"Tambakan ng files ng lahat" (Network USB)
+Step1: d:/netusb1
+Step2: install FTP server roles:
+powershell
+Install-WindowsFeature Web-FTP-server -IncludeAllSubfeature
+Import-Module WebAdministration
 
 
 
+Task9: Learn Basic Encryption Using secure shell
+Configure basic username/ and pass:
+CoreBABA:
+config t
+username Admin privilege 15 secret pass
+username mark privilege 15 secret pass
+username inutil privilege 7 secret pass
+line vty 0 13
+ login local
+ exec-timeout 0 0
+end
+
+
+Task10: Why company requires SSH instead of Telnet:
+telnet = very hackable, very unsecure, unencrypted
+SSH = encrypted and secured
+Demo:
+config t
+ip domain-name rivanit.com
+crypto key generate rsa
+
+ip ssh version 2
+ip ssh time-out 120
+
+CYPERTEXT(HINDI NABABASA)
+Cleartext(Nababasa)
+
+
+Task11: TFTP: Trivial File transfer Protocol: Vs FTP
+tftp = very fast, not reliable, uses user datagram protocol , port = 69
+ftp = slower but reliable, uses seq,ack,window, port = 21
 
 
 
+Task12: How to start a hacking career in Penetration
+Testing:
+Step1:
+-security concepts ( threats, vulnerabilities, exploits, and mitigation techniques) = MITRE framework
+Step2: attack basics:
+Get the all
+nmap -sP 10.k.1.0/24
+nmap -v 10.k.1.10 
+
+if 339/445 is open port you can attack C/d
+
+cmd
+net use \\10.32.1.10\ipc$ /user:administrator
+net use h: /delete
+netstat -s -p tcp
+
+Task13: How to protect your webs apps/internet servers.
+How to make a basic firewall: formula
+	Protocol 	Hacket 		Victim		PORT:
+
+
+ex.1 create a FW Policy to meet this condition:
+www.web8.com must allow only port http and https
+www.web9.com must allow only dns,ssh
+@FW VPN
+
+config t
+no ip access-list extended POLICY2
+ip access-list extended POLICY2
+ Permit tcp any host www.web8.com eq 80 log
+ Permit tcp any host www.web8.com eq 443 log
+ Permit tcp any host www.web9.com eq 53 log
+ Permit tcp any host www.web9.com eq 22 log
+ Permit icmp any host www.web9.com log
+Int Gi 3
+ ip access-group POLICY1 in
+do sh ip access-list POLICY1
+
+
+ex.2 create a FW Policy to meet this condition:
+www.web8.com must allow only port dns,ssh,http
+www.web9.com must allow only https,ssh,telnet  
+@FW VPN
+
+config t
+no ip access-list extended POLICY2
+ip access-list extended POLICY2
+ Permit tcp any host www.web8.com eq 53 log
+ Permit tcp any host www.web8.com eq 22 log
+ Permit tcp any host www.web8.com eq 80 log
+ Permit tcp any host www.web9.com eq 443 log
+ Permit tcp any host www.web8.com eq 22 log
+ Permit tcp any host www.web9.com eq 23 log
+ Permit icmp any host www.web9.com log
+Int Gi 3
+ ip access-group POLICY2 in
+do sh ip access-list POLICY2
 
 
 
+ex.3 create a FW Policy to meet this condition:
+www.web8.com must allow only telnet,ssh,https,ping(iscmp)
+www.web9.com must allow only http,dns,https,ping(no port)  
+@FW VPN
+
+config t
+no ip access-list extended POLICY3
+ip access-list extended POLICY3
+ Permit tcp any host www.web8.com eq 23 log
+ Permit tcp any host www.web8.com eq 22 log
+ Permit tcp any host www.web8.com eq 443 log
+ Permit icmp any host www.web8.com log
+ Permit tcp any host www.web9.com eq 80 log
+ Permit tcp any host www.web9.com eq 53 log
+ Permit tcp any host www.web9.com eq 443 log
+ Permit icmp any host www.web9.com log
+Int Gi 3
+ ip access-group POLICY3 in
+do sh ip access-list POLICY3
+
+
+Int Gi 3
+ No ip access-group POLICY3 in
+end
+
+
+ex.4: Blocking IP address and host completely:
+gi3				Bldg
+192.168.103.3			192.168.103.33
+192.168.103.9			192.168.103.34
+Make a FW policy so that: 192.168.103.33 and .34 is block to hi3.
+all Else is allowed:
 
 
 
+ex.4: Use Standard-List to block other
+@edge
+config t
+NO ip access-list Standar BAWALSILA1
+ip access-list Standar BAWALSILA1
+ deny 10.12.0.0 0.0.255.255
+ deny 10.22.0.0 0.0.255.255
+ deny 10.32.0.0 0.0.255.255
+ deny 10.42.0.0 0.0.255.255
+Permit Any
+ Int Gi 0/0/1
+ ip access-group BAWALSILA1 in
+ do sh ip access-list BAWALSILA1
+ 
+remove the FW
+ Int Gi 0/0/1
+No ip access-group BAWALSILA1 in
+ do sh ip access-list BAWALSILA1
+
+
+ex.5: BAWAL 2
+@edge
+config t
+NO ip access-list Standar BAWALSILA1
+ip access-list Standar BAWALSILA1
+ deny 10.11.0.0 0.0.255.255
+ deny 10.12.0.0 0.0.255.255
+ deny 10.21.0.0 0.0.255.255
+ deny 10.22.0.0 0.0.255.255
+Permit Any
+ Int Gi 0/0/1
+ ip access-group BAWALSILA1 in
+ do sh ip access-list BAWALSILA1
+ 
+remove the FW
+ Int Gi 0/0/1
+No ip access-group BAWALSILA1 in
+ do sh ip access-list BAWALSILA1
+
+
+*powershell
+Set-NetFirewallProfile -name public,private,domain -enable false
 
 
 
+ex.5: BAWAL 3
+@edge
+config t
+NO ip access-list Standar BAWALSILA3
+ip access-list Standar BAWALSILA3
+ deny 10.11.0.0 0.0.255.255
+ deny 10.12.0.0 0.0.255.255
+ deny 10.41.0.0 0.0.255.255
+ deny 10.42.0.0 0.0.255.255
+Permit Any
+ Int Gi 0/0/1
+ ip access-group BAWALSILA3 in
+ do sh ip access-list BAWALSILA3
+ 
+remove the FW
+ Int Gi 0/0/1
+No ip access-group BAWALSILA3 in
+ do sh ip access-list BAWALSILA3
 
+6.
+config t
+NO ip access-list Standar SOULMATE
+ip access-list Standar SOULMATE
+ deny 10.11.0.0 0.0.255.255
+ deny 10.12.0.0 0.0.255.255
+ deny 10.21.0.0 0.0.255.255
+ deny 10.22.0.0 0.0.255.255
+ deny 10.41.0.0 0.0.255.255
+ deny 10.42.0.0 0.0.255.255
+Permit Any
+ Int Gi 0/0/1
+ ip access-group SOULMATE in
+ do sh ip access-list SOULMATE
+
+remove the FW
+ Int Gi 0/0/1
+No ip access-group SOULMATE in
+ do sh ip access-list SOULMATE 
+
+TASK14: Configuring Cisco python:
+
+import cli
+
+cfg1 = '''hostname pythonAPP
+'''
+
+cli.configurep(cfg1)
+
+Create Loopback in python:
+
+import cli
+
+config_2 = '''hostname Mr_Python
+int loop 9
+ip add 9.9.9.9 255.255.255.255
+int loop 8
+ip add 8.8.8.8 255.255.255.255
+int loop 7
+ip add 7.7.7.7 255.255.255.255
+int loop 6
+ip add 6.6.6.6 255.255.255.255
+end
+'''
+
+cli.configurep(config_2)
